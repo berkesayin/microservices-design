@@ -50,4 +50,9 @@ public class UserService {
                 .map(userMapper::fromUser)
                 .collect(Collectors.toList());
     }
+
+    public Boolean checkUserById(String userId) {
+        return userRepository.findById(userId)
+                .isPresent();
+    }
 }

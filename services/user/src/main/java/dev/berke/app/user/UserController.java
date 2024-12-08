@@ -30,4 +30,12 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllCustomers());
     }
 
+    @GetMapping("/exists/{user-id}")
+    public ResponseEntity<Boolean> checkUserById(
+            @PathVariable("user-id") String userId
+    ) {
+        return ResponseEntity.ok(userService.checkUserById(userId));
+    }
+
+
 }
