@@ -17,5 +17,5 @@ public class UserMapper {
                 .vehicle(userRequest.vehicle())
                 .build();
     }
-    
+
 }
