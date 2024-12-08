@@ -61,4 +61,9 @@ public class UserService {
                 .map(userMapper::fromUser)
                 .orElseThrow(() -> new UserNotFoundException(String.format("No user found with the provided ID:: %s", userId)));
     }
+
+    public void deleteUserById(String userId) {
+        userRepository.deleteById(userId);
+    }
+
 }

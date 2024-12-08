@@ -3,7 +3,14 @@ package dev.berke.app.user;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -44,5 +51,12 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserById(userId));
     }
 
+    @DeleteMapping("/{user-id}")
+    public ResponseEntity<Void> deleteUserById(
+            @PathVariable("user-id") String userId
+    ) {
+        userService.deleteUserById(userId);
+        return ResponseEntity.accepted().build();
+    }
 
 }
