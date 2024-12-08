@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/slots")
 @RequiredArgsConstructor
@@ -22,6 +24,11 @@ public class SlotController {
             @PathVariable("slot-id") Integer slotId
     ) {
         return ResponseEntity.ok(slotService.getSlotById(slotId));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<SlotResponse>> getAllSlots() {
+        return ResponseEntity.ok(slotService.getAllSlots());
     }
 
 }
