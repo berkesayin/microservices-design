@@ -55,4 +55,10 @@ public class UserService {
         return userRepository.findById(userId)
                 .isPresent();
     }
+
+    public UserResponse getUserById(String userId) {
+        return userRepository.findById(userId)
+                .map(userMapper::fromUser)
+                .orElseThrow(() -> new UserNotFoundException(String.format("No user found with the provided ID:: %s", userId)));
+    }
 }

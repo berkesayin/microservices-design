@@ -37,5 +37,12 @@ public class UserController {
         return ResponseEntity.ok(userService.checkUserById(userId));
     }
 
+    @GetMapping("/{user-id}")
+    public ResponseEntity<UserResponse> getUserById(
+            @PathVariable("user-id") String userId
+    ) {
+        return ResponseEntity.ok(userService.getUserById(userId));
+    }
+
 
 }
