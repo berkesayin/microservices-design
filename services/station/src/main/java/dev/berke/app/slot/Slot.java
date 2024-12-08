@@ -2,11 +2,7 @@ package dev.berke.app.slot;
 
 import dev.berke.app.station.Station;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,7 +19,10 @@ import java.math.BigDecimal;
 @Entity
 public class Slot {
 
+    @Id
+    @GeneratedValue
     private Integer id;
+    
     private Integer slotNumber;
     private Boolean isFastCharger;
 
