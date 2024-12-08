@@ -5,7 +5,7 @@ services:
     environment:
       POSTGRES_USER: berke
       POSTGRES_PASSWORD: pg-db-12
-      POSTGRES_DB: product
+      POSTGRES_DB: station
       PGDATA: /var/lib/postgresql/data
     volumes:
       - postgres:/var/lib/postgresql/data
