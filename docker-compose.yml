@@ -1,0 +1,116 @@
+services:
+  postgres:
+    image: postgres
+    container_name: ms-pgdb
+    environment:
+      POSTGRES_USER: berke
+      POSTGRES_PASSWORD: pg-db-12
+      POSTGRES_DB: product
+      PGDATA: /var/lib/postgresql/data
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    networks:
+      - ms-net
+    restart: unless-stopped
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: ms-pgadmin
+    environment:
+      # PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-berkesayin@gmail.com}
+      # PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-pg-ui-12}
+      PGADMIN_DEFAULT_EMAIL: berkesayin@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: pg-ui-1234
+      # PGADMIN_CONFIG_SERVER_MODE: "False"
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    ports:
+      - 5050:80
+    networks:
+      - ms-net
+    restart: unless-stopped
+
+  mongodb:
+    image: mongo
+    container_name: ms-mongodb
+    volumes:
+      - mongo:/data
+    ports:
+      - 27017:27017
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=berke
+      - MONGO_INITDB_ROOT_PASSWORD=mng-db-12
+    # optional
+    healthcheck:
+      test:  echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+
+  mongo-express:
+    image: mongo-express
+    container_name: ms-mongo-express
+    restart: unless-stopped
+    ports:
+      - 8081:8081
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=berke
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=mng-db-12
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+      # additional configs
+      - ME_CONFIG_BASICAUTH_USERNAME=admin
+      - ME_CONFIG_BASICAUTH_PASSWORD=q
+      - ME_CONFIG_MONGODB_PORT=27017
+      - ME_CONFIG_MONGODB_URL=mongodb://berke:mng-db-12@mongodb:27017/
+    # optional
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: ms-zookeeper
+    environment:
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "22181:2181"
+    networks:
+      - ms-net
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: ms-kafka
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+    networks:
+      - ms-net
+
+  maildev:
+    image: maildev/maildev
+    container_name: ms-maildev
+    ports:
+      - 1080:1080
+      - 1025:1025 # SMTP Server
+
+networks:
+  ms-net:
+    driver: bridge
+
+volumes:
+  postgres:
+  pgadmin:
+  mongo:
