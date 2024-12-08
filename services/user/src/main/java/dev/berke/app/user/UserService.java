@@ -44,7 +44,7 @@ public class UserService {
         }
     }
 
-    public List<UserResponse> getAllCustomers() {
+    public List<UserResponse> getAllUsers() {
         return userRepository.findAll()
                 .stream()
                 .map(userMapper::fromUser)
