@@ -20,4 +20,19 @@ public class SlotMapper {
                 )
                 .build();
     }
+
+    public SlotResponse toSlotResponse(Slot slot) {
+        return new SlotResponse(
+                slot.getId(),
+                slot.getSlotNumber(),
+                slot.getIsFastCharger(),
+                slot.getStatus(),
+                slot.getAvailableHour(),
+                slot.getPricePerHour(),
+                slot.getStation().getId(),
+                slot.getStation().getName(),
+                slot.getStation().getStatus()
+        );
+    }
 }
+

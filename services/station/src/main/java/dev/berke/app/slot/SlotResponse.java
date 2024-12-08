@@ -1,16 +1,18 @@
 package dev.berke.app.slot;
 
+import dev.berke.app.station.StationStatus;
+
 import java.math.BigDecimal;
 
 public record SlotResponse(
         Integer id,
         Integer slotNumber,
         Boolean isFastCharger,
-        String status,
+        SlotStatus status,
         double availableHour,
         BigDecimal pricePerHour,
         Integer stationId,
         String stationName,
-        String stationStatus
+        StationStatus stationStatus
 ) {
 }
