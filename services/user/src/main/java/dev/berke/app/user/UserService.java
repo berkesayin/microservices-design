@@ -5,6 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -39,5 +42,12 @@ public class UserService {
         if (userRequest.vehicle() != null) {
             user.setVehicle(userRequest.vehicle());
         }
+    }
+
+    public List<UserResponse> getAllCustomers() {
+        return userRepository.findAll()
+                .stream()
+                .map(userMapper::fromUser)
+                .collect(Collectors.toList());
     }
 }

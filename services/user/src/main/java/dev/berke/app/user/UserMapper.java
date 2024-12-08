@@ -18,4 +18,14 @@ public class UserMapper {
                 .build();
     }
 
+    public UserResponse fromUser(User user) {
+        return new UserResponse(
+                user.getId(),
+                user.getFirstname(),
+                user.getLastname(),
+                user.getEmail(),
+                user.getVehicle()
+        );
+    }
+
 }
