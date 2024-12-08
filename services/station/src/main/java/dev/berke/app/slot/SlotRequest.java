@@ -15,7 +15,7 @@ public record SlotRequest(
         Boolean isFastCharger,
 
         @NotNull(message = "Slot status is required")
-        String status,
+        SlotStatus status,
 
         @Positive(message = "Available hour should be positive")
         double availableHour,
