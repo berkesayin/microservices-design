@@ -7,5 +7,8 @@ spring:
       port: 27017
       database: charge
       authentication-database: admin
+rapidapi:
+  host: ev-charge-finder.p.rapidapi.com
+  key: 6a368712ebmsh58ac9ebf50e2926p16436djsn9f2e9e826dce
 server:
   port: 8040
