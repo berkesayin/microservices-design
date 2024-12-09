@@ -98,6 +98,24 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
     networks:
       - ms-net
+ 
+  redis:
+    image: redis:7-alpine
+    container_name: ms-redis-c
+    restart: always
+    ports:
+      - "6379:6379"
+    environment:
+      REDIS_PASSWORD: secret
+  
+  redis-insight:
+    image: redis/redisinsight:latest
+    container_name: ms-ri-c
+    restart: always
+    ports:
+      - "5540:5540"
+    volumes:
+      - redis-insight:/data
 
   maildev:
     image: maildev/maildev
@@ -114,3 +132,4 @@ volumes:
   postgres:
   pgadmin:
   mongo:
+  redis-insight:

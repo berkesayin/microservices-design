@@ -16,7 +16,7 @@ spring:
         - id: station-service
           uri: lb:http://STATION-SERVICE
           predicates:
-            - Path=/api/v1/slots/**|/api/v1/stations/**
+            - Path=/api/v1/slots/**
         - id: payment-service
           uri: lb:http://PAYMENT-SERVICE
           predicates:

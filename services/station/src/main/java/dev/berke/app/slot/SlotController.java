@@ -2,6 +2,7 @@ package dev.berke.app.slot;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +20,7 @@ public class SlotController {
         return ResponseEntity.ok(slotService.createSlot(slotRequest));
     }
 
+    @Cacheable(value = "slot", key = "#slotId")
     @GetMapping("/{slot-id}")
     public ResponseEntity<SlotResponse> getSlotById(
             @PathVariable("slot-id") Integer slotId
@@ -26,6 +28,7 @@ public class SlotController {
         return ResponseEntity.ok(slotService.getSlotById(slotId));
     }
 
+    @Cacheable(value = "slots")
     @GetMapping
     public ResponseEntity<List<SlotResponse>> getAllSlots() {
         return ResponseEntity.ok(slotService.getAllSlots());
