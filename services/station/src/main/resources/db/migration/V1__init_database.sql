@@ -1,0 +1,20 @@
+CREATE TABLE IF NOT EXISTS station
+(
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    status VARCHAR(50) NOT NULL CHECK (status IN ('ACTIVE', 'INACTIVE', 'MAINTENANCE'))
+);
+
+CREATE TABLE IF NOT EXISTS slot
+(
+    id SERIAL PRIMARY KEY,
+    slot_number INTEGER NOT NULL,
+    is_fast_charger BOOLEAN NOT NULL,
+    status VARCHAR(50) NOT NULL CHECK (status IN ('AVAILABLE', 'OCCUPIED', 'RESERVED', 'MAINTENANCE')),
+    available_hour DOUBLE PRECISION NOT NULL CHECK (available_hour > 0),
+    price_per_hour NUMERIC(38, 2) NOT NULL CHECK (price_per_hour > 0),
+    station_id INTEGER NOT NULL REFERENCES station (id) ON DELETE CASCADE
+);
+
+CREATE SEQUENCE IF NOT EXISTS station_seq INCREMENT BY 50;
+CREATE SEQUENCE IF NOT EXISTS slot_seq INCREMENT BY 50;
