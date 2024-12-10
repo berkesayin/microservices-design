@@ -35,6 +35,6 @@ public class Station {
     @Enumerated(EnumType.STRING)
     private StationStatus status;
 
-    @OneToMany(mappedBy = "station", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "station", cascade = CascadeType.ALL)
     private List<Slot> slots;
 }
