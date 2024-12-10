@@ -1,0 +1,33 @@
+spring:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: user-service
+          uri: lb:http://USER-SERVICE
+          predicates:
+            - Path=/api/v1/users/**
+        - id: station-service
+          uri: lb:http://STATION-SERVICE
+          predicates:
+            - Path=/api/v1/stations/**
+        - id: slot-service
+          uri: lb:http://STATION-SERVICE
+          predicates:
+            - Path=/api/v1/slots/**
+        - id: reservation-service
+          uri: lb:http://RESERVATION-SERVICE
+          predicates:
+            - Path=/api/v1/reservations/**
+        - id: charge-service
+          uri: lb:http://CHARGE-SERVICE
+          predicates:
+            - Path=/api/v1/charges/**
+        - id: payment-service
+          uri: lb:http://PAYMENT-SERVICE
+          predicates:
+            - Path=/api/v1/payments/**
+server:
+  port: 8222
