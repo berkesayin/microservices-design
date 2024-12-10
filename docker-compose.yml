@@ -39,6 +39,8 @@ services:
       - mongo:/data
     ports:
       - 27017:27017
+    networks:
+      - ms-net
     environment:
       - MONGO_INITDB_ROOT_USERNAME=berke
       - MONGO_INITDB_ROOT_PASSWORD=mng-db-12
@@ -56,6 +58,8 @@ services:
     restart: unless-stopped
     ports:
       - 8081:8081
+    networks:
+      - ms-net
     environment:
       - ME_CONFIG_MONGODB_ADMINUSERNAME=berke
       - ME_CONFIG_MONGODB_ADMINPASSWORD=mng-db-12
@@ -105,6 +109,8 @@ services:
     ports:
       - 1080:1080
       - 1025:1025 # SMTP Server
+    networks:
+      - ms-net
 
 networks:
   ms-net:
