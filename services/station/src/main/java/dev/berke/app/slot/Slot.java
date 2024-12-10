@@ -33,6 +33,6 @@ public class Slot {
     private BigDecimal pricePerHour;
 
     @ManyToOne
-    @JoinColumn
+    @JoinColumn(name = "stationId", referencedColumnName = "id")
     private Station station;
 }

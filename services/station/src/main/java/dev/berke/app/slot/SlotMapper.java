@@ -1,10 +1,15 @@
 package dev.berke.app.slot;
 
 import dev.berke.app.station.Station;
+import dev.berke.app.station.StationRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class SlotMapper {
+
+    private final StationRepository stationRepository;
 
     public Slot toSlot(SlotRequest slotRequest) {
         return Slot.builder()
