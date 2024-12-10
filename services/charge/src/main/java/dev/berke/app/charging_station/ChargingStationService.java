@@ -11,7 +11,6 @@ import org.springframework.web.client.RestTemplate;
 public class ChargingStationService {
 
     private final RestTemplate restTemplate;
-    private final ChargingStationRepository chargingStationRepository;
 
     @Value("${rapidapi.host}")
     private String rapidApiHost;
@@ -22,8 +21,7 @@ public class ChargingStationService {
     public String fetchChargingStations(String location, int limit) {
         String url = String.format(
                 "https://%s/search-by-location?near=%s&limit=%d",
-                rapidApiHost, location, limit
-        );
+                rapidApiHost, location, limit);
         // Set headers
         org.springframework.http.HttpHeaders headers = new org.springframework.http.HttpHeaders();
         headers.set("x-rapidapi-host", rapidApiHost);
@@ -34,8 +32,7 @@ public class ChargingStationService {
                 url,
                 org.springframework.http.HttpMethod.GET,
                 entity,
-                String.class
-        ).getBody();
+                String.class).getBody();
     }
 
 }
