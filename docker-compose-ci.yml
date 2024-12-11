@@ -1,0 +1,151 @@
+version: '3.8'
+
+services:
+  configserver:
+    build:
+      context: ./services/configserver
+    ports:
+      - "8888:8888"
+    networks:
+      - microservices-ci
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
+      interval: 30s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+
+  discovery:
+    build:
+      context: ./services/discovery
+    ports:
+      - "8761:8761"
+    networks:
+      - microservices-ci
+    depends_on:
+      configserver:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 30s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+
+  mongodb:
+    image: mongo
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=berke
+      - MONGO_INITDB_ROOT_PASSWORD=mng-db-12
+    networks:
+      - microservices-ci
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.runCommand({ ping: 1 })"]
+      interval: 30s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+
+  postgres:
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: berke
+      POSTGRES_PASSWORD: pg-db-12
+      POSTGRES_DB: station
+    networks:
+      - microservices-ci
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "berke"]
+      interval: 30s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+
+  user:
+    build:
+      context: ./services/user
+    ports:
+      - "8090:8090"
+    networks:
+      - microservices-ci
+    depends_on:
+      configserver:
+        condition: service_healthy
+      discovery:
+        condition: service_healthy
+      mongodb: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8090/actuator/health"]
+      interval: 30s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+
+  station:
+    build:
+      context: ./services/station
+    ports:
+      - "8050:8050"
+    networks:
+      - microservices-ci
+    depends_on:
+      configserver:
+        condition: service_healthy
+      discovery:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8050/actuator/health"]
+      interval: 30s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+
+  charge:
+    build:
+      context: ./services/charge
+    ports:
+      - "8040:8040"
+    networks:
+      - microservices-ci
+    depends_on:
+      configserver:
+        condition: service_healthy
+      discovery:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8040/actuator/health"]
+      interval: 30s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+
+  gateway:
+    build:
+      context: ./services/gateway
+    ports:
+      - "8222:8222"
+    networks:
+      - microservices-ci
+    depends_on:
+      configserver:
+        condition: service_healthy
+      discovery:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8222/actuator/health"]
+      interval: 30s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+
+networks:
+  microservices-ci:
+    driver: bridge
