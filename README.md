@@ -297,8 +297,7 @@ user-service           NodePort    10.96.47.72     <none>        8090:30201/TCP 
 **Optional: ** if port doesn't work, apply port forwarding
 
 ```sh
-#
-kubectl port-forward discovery-deployment-66844f5c6c-t6tm9 30201:8090
+# kubectl port-forward discovery-deployment-66844f5c6c-t6tm9 30201:8090
 Forwarding from 127.0.0.1:30201 -> 8090
 Forwarding from [::1]:30201 -> 8090
 ```
@@ -313,7 +312,7 @@ Access application: `minikube ip` : `nodePort`
 
 ### Deploy Station
 
-Deploy station:
+Another example is deploying station:
 
 - `kubernetes/station/station-postgres-config.yml`
 - `kubernetes/station/station-postgres-secret.yml`
@@ -322,15 +321,7 @@ Deploy station:
 
 Same deployment operations with `configserver`, `discovery` and `user service`.
 
-### Deploy Gateway
-
-Deploy gateway:
-
-- `kubernetes/gateway/gateway-deployment.yml`
-
-Same deployment operations with `configserver`, `discovery` and `user service`.
-
-### Cluster Info
+### Cluster Info
 
 ```sh
 # kubectl get deployments -o wide
@@ -385,17 +376,17 @@ With the pipeline configuration used during the development of the project, each
 
 **Job**: `build-and-deploy`
 
-**1. Code Checkout:** Fetches the code from the repository.
-**2. Set up Java:** Configures the environment with Java 21.
-**3. Install Docker Compose:** Installs the Docker Compose tool.
-**4. Detect Changes:** Identifies which microservices have been modified since the last commit and skips building unchanged services to speed up the process.
-**5. Set up Docker Buildx:** Configures Docker Buildx for advanced build capabilities.
-**6. Docker Login:** Authenticates with the Docker Hub (or berkesayin container registry).
-**7. Start Dependencies:** Starts required dependent services such as configuration server, discovery server MongoDB and Postgres if needed for tests.
-**8. Run Linting:** Performs code linting to ensure code quality.
-**9. Run Unit Tests:** Executes unit tests.
-**10. Package Application:** Packages updated microservices into an executable artifact, JAR file.
-**11. Build and Push Docker Image:** Builds a Docker image for each modified microservice and pushes it to the berkesayin container registry.
+- **1. Code Checkout:** Fetches the code from the repository.
+- **2. Set up Java:** Configures the environment with Java 21.
+- **3. Install Docker Compose:** Installs the Docker Compose tool.
+- **4. Detect Changes:** Identifies which microservices have been modified since the last commit and skips building unchanged services to speed up the process.
+- **5. Set up Docker Buildx:** Configures Docker Buildx for advanced build capabilities.
+- **6. Docker Login:** Authenticates with the Docker Hub (or berkesayin container registry).
+- **7. Start Dependencies:** Starts required dependent services such as configuration server, discovery server MongoDB and Postgres if needed for tests.
+- **8. Run Linting:** Performs code linting to ensure code quality.
+- **9. Run Unit Tests:** Executes unit tests.
+- **10. Package Application:** Packages updated microservices into an executable artifact, JAR file.
+- **11. Build and Push Docker Image:** Builds a Docker image for each modified microservice and pushes it to the berkesayin container registry.
 
 - **Note:** The next job will be to deploy the latest docker images to the kubernetes cluster, which is not implemented here.
 
