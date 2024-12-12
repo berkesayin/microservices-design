@@ -103,6 +103,26 @@ services:
     networks:
       - ms-net
 
+  redis:
+    image: redis:7-alpine
+    container_name: ms-redis
+    ports:
+      - "6379:6379"
+    restart: always
+    networks:
+      - ms-net
+
+  redis-insight:
+    image: redis/redisinsight:latest
+    container_name: ms-redisinsight
+    restart: always
+    ports:
+      - "5540:5540"
+    volumes:
+      - redisinsight:/data
+    networks:
+      - ms-net
+
   maildev:
     image: maildev/maildev
     container_name: ms-maildev
@@ -120,3 +140,4 @@ volumes:
   postgres:
   pgadmin:
   mongo:
+  redisinsight:
