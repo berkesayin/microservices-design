@@ -1,0 +1,45 @@
+services:
+  configserver:
+    image: berkesayin/configserver:latest
+    container_name: configserver
+    ports:
+        - "8888:8888"
+    networks:
+      - pipeline-net
+  
+  discovery:
+    image: berkesayin/discovery:latest
+    container_name: discovery
+    ports:
+        - "8761:8761"
+    depends_on:
+      - configserver
+    networks:
+      - pipeline-net
+  
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=berke
+      - MONGO_INITDB_ROOT_PASSWORD=mng-db-12
+    ports:
+      - "27017:27017"
+    networks:
+      - pipeline-net
+  
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    environment:
+      POSTGRES_USER: berke
+      POSTGRES_PASSWORD: pg-db-12
+      POSTGRES_DB: station
+    ports:
+      - "5432:5432"
+    networks:
+      - pipeline-net
+
+networks:
+  pipeline-net:
+     driver: bridge
