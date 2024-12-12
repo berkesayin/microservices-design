@@ -16,5 +16,8 @@ spring:
     baseline-version: 0
     user: ${spring.datasource.username}
     password: ${spring.datasource.password}
+  redis:
+    host: ms-redis
+    port: 6379
 server:
   port: 8050
