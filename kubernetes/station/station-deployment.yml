@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: station-deployment
+  labels:
+    app: station
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: station
+  template:
+    metadata:
+      labels:
+        app: station
+    spec:
+      containers:
+        - name: station
+          image: berkesayin/station:latest
+          ports:
+            - containerPort: 8050
+          env:
+            - name: POSTGRES_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-config
+                  key: postgres-host
+            - name: POSTGRES_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-config
+                  key: postgres-port
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-config
+                  key: postgres-db
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: postgres-user
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: postgres-password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: station-service
+spec:
+  type: NodePort
+  selector:
+    app: station
+  ports:
+    - protocol: TCP
+      port: 8050
+      targetPort: 8050
