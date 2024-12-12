@@ -1,0 +1,68 @@
+services:
+  configserver:
+    build:
+      context: ./services/configserver
+      dockerfile: Dockerfile
+    ports:
+      - "8888:8888"
+    networks:
+      - pipeline-net
+  
+  discovery:
+    build:
+      context: ./services/discovery
+      dockerfile: Dockerfile
+    ports:
+      - "8761:8761"
+    depends_on:
+      - configserver
+    networks:
+      - pipeline-net
+  
+  user:
+    build:
+      context: ./services/user
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    depends_on:
+      - discovery
+    networks:
+      - pipeline-net
+  
+  station:
+    build:
+      context: ./services/station
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+    depends_on:
+      - discovery
+    networks:
+      - pipeline-net
+  
+  charge:
+    build:
+      context: ./services/charge
+      dockerfile: Dockerfile
+    ports:
+      - "8083:8083"
+    depends_on:
+      - discovery
+    networks:
+      - pipeline-net
+  
+  gateway:
+    build:
+      context: ./src/gateway
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - discovery
+    networks:
+      - pipeline-net
+
+networks:
+  pipeline-net:
+    driver: bridge

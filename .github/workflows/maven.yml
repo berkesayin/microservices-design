@@ -6,21 +6,23 @@ on:
       - master
 
 jobs:
-  deploy:
-    if: contains(github.event.head_commit.message, '[skip ci]') == false
+  build-and-deploy:
+    name: Build and Deploy
     runs-on: ubuntu-latest
     strategy:
       matrix:
         service:
-          - charge
           - configserver
           - discovery
-          - gateway
-          - station
           - user
+          - station
+          - charge
+          - gateway
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
 
       - name: Set up Java 21
         uses: actions/setup-java@v3
@@ -28,7 +30,13 @@ jobs:
           java-version: "21"
           distribution: "temurin"
 
-      - name: Detect changes for ${{ matrix.service }}
+      - name: Install Docker Compose
+        run: |
+          curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | jq -r .tag_name)/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          chmod +x /usr/local/bin/docker-compose
+          docker-compose --version
+
+      - name: Detect changes
         id: changes
         run: |
           git fetch --unshallow  # Fetch full commit history
@@ -42,51 +50,169 @@ jobs:
           echo "Changed files:"
           git diff --name-only $PREV_COMMIT $GITHUB_SHA
 
-          # Check if the specific service directory has changed
-          if git diff --name-only $PREV_COMMIT $GITHUB_SHA | grep -q "services/${{ matrix.service }}/"; then
-            echo "changed=true" >> $GITHUB_ENV
-          else
-            echo "changed=false" >> $GITHUB_ENV
+          CHANGED_SERVICES_ARRAY="[]"
+          FIRST_ITEM=true
+          declare -A seen_services
+
+          # Check for changes in each service directory
+          if git diff --name-only $PREV_COMMIT $GITHUB_SHA | grep -q "services/configserver/"; then
+              if [[ -z "${seen_services[configserver]}" ]]; then
+                 if $FIRST_ITEM; then
+                  CHANGED_SERVICES_ARRAY+='"configserver"'
+                  FIRST_ITEM=false
+                  seen_services[configserver]=1
+                 else
+                  CHANGED_SERVICES_ARRAY+=',"configserver"'
+                  seen_services[configserver]=1
+                fi
+              fi
+          fi
+          if git diff --name-only $PREV_COMMIT $GITHUB_SHA | grep -q "services/discovery/"; then
+              if [[ -z "${seen_services[discovery]}" ]]; then
+                if $FIRST_ITEM; then
+                    CHANGED_SERVICES_ARRAY+='"discovery"'
+                    FIRST_ITEM=false
+                    seen_services[discovery]=1
+                  else
+                    CHANGED_SERVICES_ARRAY+=',"discovery"'
+                    seen_services[discovery]=1
+                  fi
+              fi
+          fi
+          if git diff --name-only $PREV_COMMIT $GITHUB_SHA | grep -q "services/user/"; then
+            if [[ -z "${seen_services[user]}" ]]; then
+               if $FIRST_ITEM; then
+                    CHANGED_SERVICES_ARRAY+='"user"'
+                    FIRST_ITEM=false
+                    seen_services[user]=1
+                 else
+                    CHANGED_SERVICES_ARRAY+=',"user"'
+                    seen_services[user]=1
+                 fi
+            fi
+          fi
+          if git diff --name-only $PREV_COMMIT $GITHUB_SHA | grep -q "services/station/"; then
+            if [[ -z "${seen_services[station]}" ]]; then
+                if $FIRST_ITEM; then
+                  CHANGED_SERVICES_ARRAY+='"station"'
+                  FIRST_ITEM=false
+                  seen_services[station]=1
+                else
+                  CHANGED_SERVICES_ARRAY+=',"station"'
+                  seen_services[station]=1
+                fi
+            fi
+          fi
+          if git diff --name-only $PREV_COMMIT $GITHUB_SHA | grep -q "services/charge/"; then
+            if [[ -z "${seen_services[charge]}" ]]; then
+               if $FIRST_ITEM; then
+                 CHANGED_SERVICES_ARRAY+='"charge"'
+                 FIRST_ITEM=false
+                 seen_services[charge]=1
+                else
+                  CHANGED_SERVICES_ARRAY+=',"charge"'
+                  seen_services[charge]=1
+                fi
+            fi
+          fi
+          if git diff --name-only $PREV_COMMIT $GITHUB_SHA | grep -q "services/gateway/"; then
+            if [[ -z "${seen_services[gateway]}" ]]; then
+              if $FIRST_ITEM; then
+                CHANGED_SERVICES_ARRAY+='"gateway"'
+                FIRST_ITEM=false
+                seen_services[gateway]=1
+              else
+                CHANGED_SERVICES_ARRAY+=',"gateway"'
+                seen_services[gateway]=1
+              fi
+            fi
           fi
 
-      - name: Skip if no changes
-        if: env.changed == 'false'
-        run: echo "No changes detected for ${{ matrix.service }}."
+          echo "CHANGED_SERVICES=$CHANGED_SERVICES_ARRAY" >> $GITHUB_ENV
 
-      - name: Run linting
-        if: env.changed == 'true'
-        run: |
-          cd services/${{ matrix.service }}
-          mvn checkstyle:checkstyle
-
-      - name: Run unit tests
-        if: env.changed == 'true'
-        run: |
-          cd services/${{ matrix.service }}
-          mvn test
-
-      - name: Package application
-        if: env.changed == 'true'
-        run: |
-          cd services/${{ matrix.service }}
-          mvn clean install
+      - name: Set up Docker Buildx
+        id: buildx
+        if: ${{ contains(env.CHANGED_SERVICES, format('"{0}"', matrix.service)) }}
+        uses: docker/setup-buildx-action@v3
 
       - name: Login to Docker Hub
-        if: env.changed == 'true'
+        if: ${{ contains(env.CHANGED_SERVICES, format('"{0}"', matrix.service)) }}
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Set up Docker Buildx
-        if: env.changed == 'true'
-        uses: docker/setup-buildx-action@v3
+      - name: Start Dependencies
+        if: ${{ contains(env.CHANGED_SERVICES, format('"{0}"', matrix.service)) }}
+        run: |
+          docker compose -f docker-compose.dependencies.yml up --build --detach
+          sleep 10 # Give services time to start
+          docker ps
+          docker logs configserver
+          docker logs discovery
+          docker logs postgres
+          docker logs mongodb
+          docker compose -f docker-compose.dependencies.yml ps
 
-      - name: Build and push Docker image for ${{ matrix.service }}
-        if: env.changed == 'true'
-        uses: docker/build-push-action@v5
-        with:
-          context: ./services/${{ matrix.service }}
-          platforms: linux/amd64,linux/arm64/v8
-          push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/${{ matrix.service }}:latest
+      - name: Run linting
+        if: ${{ contains(env.CHANGED_SERVICES, format('"{0}"', matrix.service)) }}
+        run: |
+          if [ "${{ matrix.service }}" == "configserver" ]; then
+            cd services/configserver && ./mvnw checkstyle:checkstyle
+          elif [ "${{ matrix.service }}" == "discovery" ]; then
+            cd services/discovery && ./mvnw checkstyle:checkstyle
+          elif [ "${{ matrix.service }}" == "user" ]; then
+            cd services/user && ./mvnw checkstyle:checkstyle
+          elif [ "${{ matrix.service }}" == "station" ]; then
+           cd services/station && ./mvnw checkstyle:checkstyle
+          elif [ "${{ matrix.service }}" == "charge" ]; then
+           cd services/charge && ./mvnw checkstyle:checkstyle
+          elif [ "${{ matrix.service }}" == "gateway" ]; then
+            cd services/gateway && ./mvnw checkstyle:checkstyle
+          fi
+
+      - name: Run Unit Tests
+        if: ${{ contains(env.CHANGED_SERVICES, format('"{0}"', matrix.service)) }}
+        run: |
+          if [ "${{ matrix.service }}" == "configserver" ]; then
+            cd services/configserver && ./mvnw test
+          elif [ "${{ matrix.service }}" == "discovery" ]; then
+            cd services/discovery && ./mvnw test
+          elif [ "${{ matrix.service }}" == "user" ]; then
+            cd services/user && ./mvnw test
+          elif [ "${{ matrix.service }}" == "station" ]; then
+           cd services/station && ./mvnw test
+          elif [ "${{ matrix.service }}" == "charge" ]; then
+           cd services/charge && ./mvnw test
+          elif [ "${{ matrix.service }}" == "gateway" ]; then
+            cd services/gateway && ./mvnw test
+          fi
+
+      - name: Package Application
+        if: ${{ contains(env.CHANGED_SERVICES, format('"{0}"', matrix.service)) }}
+        run: |
+          if [ "${{ matrix.service }}" == "configserver" ]; then
+            cd services/configserver && ./mvnw package -DskipTests
+          elif [ "${{ matrix.service }}" == "discovery" ]; then
+            cd services/discovery && ./mvnw package -DskipTests
+          elif [ "${{ matrix.service }}" == "user" ]; then
+            cd services/user && ./mvnw package -DskipTests
+          elif [ "${{ matrix.service }}" == "station" ]; then
+           cd services/station && ./mvnw package -DskipTests
+          elif [ "${{ matrix.service }}" == "charge" ]; then
+           cd services/charge && ./mvnw package -DskipTests
+          elif [ "${{ matrix.service }}" == "gateway" ]; then
+            cd services/gateway && ./mvnw package -DskipTests
+          fi
+
+      - name: Build and Push Docker Image
+        if: ${{ contains(env.CHANGED_SERVICES, format('"{0}"', matrix.service)) }}
+        run: |
+          cd services/${{ matrix.service }}
+          IMAGE_NAME="berkesayin/${{ matrix.service }}"
+          docker build -t "$IMAGE_NAME:latest" .
+          docker push "$IMAGE_NAME:latest"
+
+      - name: Stop Dependencies
+        if: always()
+        run: docker compose -f docker-compose.dependencies.yml down
