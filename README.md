@@ -244,49 +244,6 @@ Forwarding from [::1]:30050 -> 8888
 Access application: `minikube ip` : `nodePort`
 192.168.49.2:30050
 
-### Deploy Discovery
-
-Deploy discovery:
-
-- `kubernetes/discovery/discovery-deployment.yml`
-
-```sh
-# kubectl apply -f config-deployment.yml
-deployment.apps/discovery-deployment created
-service/discovery-service created
-```
-
-```sh
-# kubectl get deployments -o wide
-configserver-deployment   0/1     1            0           14m   configserver   berkesayin/configserver:latest   app=configserver
-discovery-deployment      0/1     1            0           14s   discovery      berkesayin/discovery:latest      app=discovery
-```
-
-```sh
-# kubectl get services -o wide
-NAME                   TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE   SELECTOR
-configserver-service   NodePort    10.103.31.136   <none>        8888:30050/TCP   15m   app=configserver
-discovery-service      NodePort    10.101.9.169    <none>        8761:30100/TCP   29s   app=discovery
-kubernetes             ClusterIP   10.96.0.1       <none>        443/TCP          27h   <none>
-```
-
-**Optional: ** if port doesn't work, apply port forwarding
-
-```sh
-#
-kubectl port-forward discovery-deployment-66844f5c6c-t6tm9 30100:8761
-Forwarding from 127.0.0.1:30100 -> 8761
-Forwarding from [::1]:30100 -> 8761
-```
-
-```sh
-# minikube ip
-192.168.49.2
-```
-
-Access application: `minikube ip` : `nodePort`
-192.168.49.2:30100
-
 ### Deploy User
 
 Deploy user:
@@ -426,7 +383,20 @@ The CI/CD pipeline is configured with the following steps, using GitHub Actions.
 
 With the pipeline configuration used during the development of the project, each new commit is detected by its service name. And then, the service image changed with the new commit is tested, built, and pushed to Dockerhub registry continiously.
 
-- **Job**: `build-and-deploy` 1.**Code Checkout:** Fetches the code from the repository. 2. **Set up Java:** Configures the environment with Java 21. 3. **Install Docker Compose:** Installs the Docker Compose tool. 4. **Detect Changes:** Identifies which microservices have been modified since the last commit and skips building unchanged services to speed up the process. 5. **Set up Docker Buildx:** Configures Docker Buildx for advanced build capabilities. 6. **Docker Login:** Authenticates with the Docker Hub (or berkesayin container registry). 7. **Start Dependencies:** Starts required dependent services such as configuration server, discovery server MongoDB and Postgres if needed for tests. 8. **Run Linting:** Performs code linting to ensure code quality. 9. **Run Unit Tests:** Executes unit tests. 10. **Package Application:** Packages updated microservices into an executable artifact, JAR file. 11. **Build and Push Docker Image:** Builds a Docker image for each modified microservice and pushes it to the berkesayin container registry.
+**Job**: `build-and-deploy`
+
+**1. Code Checkout:** Fetches the code from the repository.
+**2. Set up Java:** Configures the environment with Java 21.
+**3. Install Docker Compose:** Installs the Docker Compose tool.
+**4. Detect Changes:** Identifies which microservices have been modified since the last commit and skips building unchanged services to speed up the process.
+**5. Set up Docker Buildx:** Configures Docker Buildx for advanced build capabilities.
+**6. Docker Login:** Authenticates with the Docker Hub (or berkesayin container registry).
+**7. Start Dependencies:** Starts required dependent services such as configuration server, discovery server MongoDB and Postgres if needed for tests.
+**8. Run Linting:** Performs code linting to ensure code quality.
+**9. Run Unit Tests:** Executes unit tests.
+**10. Package Application:** Packages updated microservices into an executable artifact, JAR file.
+**11. Build and Push Docker Image:** Builds a Docker image for each modified microservice and pushes it to the berkesayin container registry.
+
 - **Note:** The next job will be to deploy the latest docker images to the kubernetes cluster, which is not implemented here.
 
 ## 9. Next Features <a name="next-features"></a>
