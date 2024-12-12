@@ -1,0 +1,624 @@
+{
+	"info": {
+		"_postman_id": "6816f3ac-6677-4ff3-8b94-d1db89dbac38",
+		"name": "microservices-design",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "32612836"
+	},
+	"item": [
+		{
+			"name": "config-server",
+			"item": []
+		},
+		{
+			"name": "discovery",
+			"item": [
+				{
+					"name": "getDiscoveryServer",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8761",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8761"
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "createUser",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstname\": \"Berke\",\n    \"lastname\": \"Berke\",\n    \"email\": \"berkesayin@gmail.com\",\n    \"vehicle\": {\n        \"brand\": \"Audi\",\n        \"model\": \"E-Tron\",\n        \"year\": \"2030\",\n        \"licensePlate\": \"34 BS 2234\",\n        \"batteryCapacity\": \"110 kWh\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8090/api/v1/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"v1",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateUser",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"6755871c97274b04482d7278\",\n    \"firstname\": \"Berke\",\n    \"lastname\": \"Sayin\",\n    \"email\": \"berkesayin@gmail.com\",\n    \"vehicle\": {\n        \"brand\": \"Audi\",\n        \"model\": \"E-Tron\",\n        \"year\": \"2019\",\n        \"licensePlate\": \"34 BS 1234\",\n        \"batteryCapacity\": \"130 kWh\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8090/api/v1/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"v1",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getAllUsers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8090/api/v1/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"v1",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "checkUserById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8090/api/v1/users/exists/6755871c97274b04482d7278",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"exists",
+								"6755871c97274b04482d7278"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getUserById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8090/api/v1/users/6755871c97274b04482d7278",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"6755871c97274b04482d7278"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteUserById",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8090/api/v1/users/675584ac97274b04482d7277",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8090",
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"675584ac97274b04482d7277"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "station",
+			"item": [
+				{
+					"name": "getAllSlots",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8050/api/v1/slots",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8050",
+							"path": [
+								"api",
+								"v1",
+								"slots"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "createSlot",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"slotNumber\": 14,\n  \"isFastCharger\": true,\n  \"status\": \"RESERVED\",\n  \"availableHour\": 15.0,\n  \"pricePerHour\": 9.50,\n  \"stationId\": 451\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8050/api/v1/slots",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8050",
+							"path": [
+								"api",
+								"v1",
+								"slots"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getSlotById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8050/api/v1/slots/251",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8050",
+							"path": [
+								"api",
+								"v1",
+								"slots",
+								"251"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "charge",
+			"item": [
+				{
+					"name": "fetchData",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8040/api/v1/charges/fetch-charging-stations?location=New%20York%2C%20NY%2C%20USA&limit=20",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8040",
+							"path": [
+								"api",
+								"v1",
+								"charges",
+								"fetch-charging-stations"
+							],
+							"query": [
+								{
+									"key": "location",
+									"value": "New%20York%2C%20NY%2C%20USA"
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "saveFetchedData",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8040/api/v1/charges/save?location=New%20York%2C%20NY%2C%20USA&limit=20\n",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8040",
+							"path": [
+								"api",
+								"v1",
+								"charges",
+								"save"
+							],
+							"query": [
+								{
+									"key": "location",
+									"value": "New%20York%2C%20NY%2C%20USA"
+								},
+								{
+									"key": "limit",
+									"value": "20\n"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "gateway",
+			"item": [
+				{
+					"name": "createUser",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"firstname\": \"Berke\",\n    \"lastname\": \"Sayin\",\n    \"email\": \"berkesayin@gmail.com\",\n    \"vehicle\": {\n        \"brand\": \"Audi\",\n        \"model\": \"E-Tron\",\n        \"year\": \"2018\",\n        \"licensePlate\": \"34 BS 2234\",\n        \"batteryCapacity\": \"100 kWh\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8222/api/v1/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8222",
+							"path": [
+								"api",
+								"v1",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateUser",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"6755871c97274b04482d7278\",\n    \"firstname\": \"Berke\",\n    \"lastname\": \"Berke\",\n    \"email\": \"berkesayin@gmail.com\",\n    \"vehicle\": {\n        \"brand\": \"Audi\",\n        \"model\": \"E-Tron\",\n        \"year\": \"2019\",\n        \"licensePlate\": \"34 BS 1234\",\n        \"batteryCapacity\": \"130 kWh\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8222/api/v1/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8222",
+							"path": [
+								"api",
+								"v1",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getAllUsers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8222/api/v1/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8222",
+							"path": [
+								"api",
+								"v1",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "checkUserById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8222/api/v1/users/6755871c97274b04482d7278",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8222",
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"6755871c97274b04482d7278"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getUserById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8222/api/v1/users/6755871c97274b04482d7278",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8222",
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"6755871c97274b04482d7278"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteUserById",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8222/api/v1/users/6755871c97274b04482d7278",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8222",
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"6755871c97274b04482d7278"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getAllSlots",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8222/api/v1/slots",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8222",
+							"path": [
+								"api",
+								"v1",
+								"slots"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "createSlot",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"slotNumber\": 15,\n  \"isFastCharger\": true,\n  \"status\": \"RESERVED\",\n  \"availableHour\": 15.0,\n  \"pricePerHour\": 9.50,\n  \"stationId\": 451\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8222/api/v1/slots",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8222",
+							"path": [
+								"api",
+								"v1",
+								"slots"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getSlotById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8222/api/v1/slots/1504",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8222",
+							"path": [
+								"api",
+								"v1",
+								"slots",
+								"1504"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "fetchData",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8222/api/v1/charges/fetch-charging-stations?location=New%20York%2C%20NY%2C%20USA&limit=20",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8222",
+							"path": [
+								"api",
+								"v1",
+								"charges",
+								"fetch-charging-stations"
+							],
+							"query": [
+								{
+									"key": "location",
+									"value": "New%20York%2C%20NY%2C%20USA"
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "saveFetchedData",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8222/api/v1/charges/save?location=New%20York%2C%20NY%2C%20USA&limit=20\n",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8222",
+							"path": [
+								"api",
+								"v1",
+								"charges",
+								"save"
+							],
+							"query": [
+								{
+									"key": "location",
+									"value": "New%20York%2C%20NY%2C%20USA"
+								},
+								{
+									"key": "limit",
+									"value": "20\n"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
